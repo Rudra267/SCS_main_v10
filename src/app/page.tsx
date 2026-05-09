@@ -2308,7 +2308,7 @@ export default function Home() {
                 <div className="relative h-[220px] w-full overflow-hidden bg-[#bfe4ff]">
                   <iframe
                     title="Sri Chaitanya Madhapur map"
-                    src="https://www.google.com/maps?q=Sri+Sai+Plaza,+Plot+No.+80,+Ayyappa+Society+Main+Rd,+Madhapur,+Hyderabad&z=15&output=embed"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.1546690527275!2d78.39462047591145!3d17.45230970093016!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb916718d39ae7%3A0x4978e67673ec0706!2sSri%20Chaitanya%20Juniour%20College!5e0!3m2!1sen!2sin!4v1778322786556!5m2!1sen!2sin"
                     className="h-full w-full border-0"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
