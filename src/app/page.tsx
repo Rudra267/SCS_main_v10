@@ -1140,15 +1140,41 @@ export default function Home() {
                   style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
                   className="mt-5 max-w-[620px] text-[25px] font-light leading-[0.98] tracking-[-0.06em] text-[#31435f] sm:text-[50px] lg:text-[60px] xl:text-[60px]"
                 >
-                  Shaping bright
-                  <span className="block font-extrabold text-[#31435f]">
+                  <span
+                    className="block"
+                    style={{
+                      animation:
+                        "heroLineReveal 880ms cubic-bezier(0.16,1,0.3,1) 120ms both",
+                    }}
+                  >
+                    Shaping bright
+                  </span>
+                  <span
+                    className="block font-extrabold text-[#31435f]"
+                    style={{
+                      animation:
+                        "heroLineReveal 920ms cubic-bezier(0.16,1,0.3,1) 260ms both",
+                    }}
+                  >
                     futures with
                   </span>
-                  <span className="block font-extrabold text-[#31435f]">
+                  <span
+                    className="block font-extrabold text-[#31435f]"
+                    style={{
+                      animation:
+                        "heroLineReveal 920ms cubic-bezier(0.16,1,0.3,1) 400ms both",
+                    }}
+                  >
                     academic excellence
                   </span>
                 </h1>
-                <p className="mt-6 max-w-[520px] text-[14px] leading-7 text-[#304256] sm:text-[16px] lg:text-[18px]">
+                <p
+                  className="mt-6 max-w-[520px] text-[14px] leading-7 text-[#304256] sm:text-[16px] lg:text-[18px]"
+                  style={{
+                    animation:
+                      "heroTextReveal 980ms cubic-bezier(0.22,1,0.36,1) 520ms both",
+                  }}
+                >
                   Discover a nurturing learning environment designed to help
                   every student grow with confidence, discipline, and purpose.
                 </p>
