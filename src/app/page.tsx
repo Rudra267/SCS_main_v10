@@ -2221,7 +2221,7 @@ export default function Home() {
                       : index % 4 === 2
                         ? "-rotate-[4deg]"
                         : "rotate-[6deg]"
-                } origin-bottom transition-transform duration-500 hover:z-10 hover:-translate-y-10 hover:rotate-0 hover:scale-[1.03] hover:shadow-[0_28px_50px_rgba(15,23,42,0.2)] ${
+                } origin-bottom transition-transform duration-500 hover:z-10 hover:-translate-y-14 hover:rotate-0 hover:scale-[1.03] hover:shadow-[0_28px_50px_rgba(15,23,42,0.2)] ${
                   index === 0 ? "" : "-ml-9 sm:-ml-11 lg:-ml-12"
                 }`}
               >
