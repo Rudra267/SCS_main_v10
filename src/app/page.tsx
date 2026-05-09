@@ -428,6 +428,7 @@ const footerSocialLinks = [
 export default function Home() {
   const legacyStatsRef = useRef<HTMLDivElement | null>(null);
   const storyCarouselRef = useRef<HTMLDivElement | null>(null);
+  const featuredCitiesSectionRef = useRef<HTMLDivElement | null>(null);
   const featuredCitiesPerView = 7;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
@@ -441,11 +442,12 @@ export default function Home() {
   const [featuredCityStartIndex, setFeaturedCityStartIndex] = useState(0);
   const [admissionsBannerIndex, setAdmissionsBannerIndex] = useState(0);
   const [aboutPillarsIntroVisible, setAboutPillarsIntroVisible] = useState(false);
+  const [featuredCitiesVisible, setFeaturedCitiesVisible] = useState(false);
   const [isAdmissionModalOpen, setIsAdmissionModalOpen] = useState(false);
   const [isAdmissionModalClosing, setIsAdmissionModalClosing] = useState(false);
   const [admissionForm, setAdmissionForm] = useState({
     parentName: "",
-    countryCode: "91",
+    countryCode: "+91",
     mobile: "",
     email: "",
     academicYear: academicYearOptions[1],
@@ -573,6 +575,42 @@ export default function Home() {
 
     return () => window.removeEventListener("resize", syncStoryCardsPerView);
   }, []);
+
+  useEffect(() => {
+    const section = featuredCitiesSectionRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setFeaturedCitiesVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.25,
+        rootMargin: "0px 0px -10% 0px",
+      },
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!featuredCitiesVisible) {
+      return;
+    }
+
+    setFeaturedCitiesVisible(false);
+
+    const frameId = window.requestAnimationFrame(() => {
+      setFeaturedCitiesVisible(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [featuredCityStartIndex]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -787,8 +825,8 @@ export default function Home() {
   const closeMenu = () => setIsMenuOpen(false);
   const headerIsSolid = true;
   const headerTextClass = headerIsSolid ? "text-[#31435f]" : "!text-white";
-  const logoTitleClass = headerIsSolid ? "text-[#6faee2]" : "text-white";
-  const logoSubtitleClass = headerIsSolid ? "text-[#7bcfbe]" : "text-white/92";
+  const logoTitleClass = headerIsSolid ? "text-[#17314a]" : "text-white";
+  const logoSubtitleClass = headerIsSolid ? "text-[#5a6f86]" : "text-white/78";
   const headerEnterClass = headerIsSolid
     ? "translate-y-0 opacity-100"
     : "-translate-y-2 opacity-95";
@@ -824,18 +862,18 @@ export default function Home() {
                   priority
                   className="h-[58px] w-auto"
                 />
-                <div className="flex min-w-[220px] flex-col leading-none">
+                <div className="flex min-w-[220px] flex-col">
                   <span
-                    style={{ fontFamily: "var(--font-cinzel)" }}
-                    className={`whitespace-nowrap text-[21px] font-semibold uppercase leading-none transition-colors duration-500 ${logoTitleClass}`}
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
+                    className={`whitespace-nowrap text-[18px] font-extrabold tracking-[-0.04em] transition-colors duration-500 sm:text-[20px] ${logoTitleClass}`}
                   >
                     Sri Chaitanya
                   </span>
                   <span
-                    style={{ fontFamily: "Sora, system-ui, sans-serif" }}
-                    className={`mt-1 text-[12px] font-semibold leading-none uppercase tracking-[0.30rem] transition-colors duration-500 ${logoSubtitleClass}`}
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
+                    className={`mt-0.5 text-[11px] font-medium tracking-[-0.01em] transition-colors duration-500 sm:text-[12px] ${logoSubtitleClass}`}
                   >
-                    Schools
+                    Madhapur, Hyderabad
                   </span>
                 </div>
               </div>
@@ -1275,6 +1313,7 @@ export default function Home() {
         <div className="mx-auto w-full max-w-[1510px]">
           <div
             data-section-reveal
+            ref={featuredCitiesSectionRef}
             className="section-reveal-up"
             style={{ animationDelay: "180ms" }}
           >
@@ -1309,19 +1348,43 @@ export default function Home() {
                     type="button"
                     key={`${city.name}-${featuredCityStartIndex}-${index}`}
                     onClick={() => handleOpenAdmissionModal(city.name)}
-                    className="text-center transition-transform duration-300 hover:-translate-y-1"
+                    className={`text-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 ${
+                      featuredCitiesVisible
+                        ? "translate-y-0 scale-100 opacity-100"
+                        : "translate-y-6 scale-[0.94] opacity-0"
+                    }`}
+                    style={{ transitionDelay: `${120 + index * 70}ms` }}
                   >
-                    <div className="relative mx-auto h-[96px] w-[116px] overflow-hidden rounded-[16px] bg-[#A2D2FF] shadow-[0_12px_26px_rgba(34,43,64,0.12)]">
+                    <div
+                      className={`relative mx-auto h-[96px] w-[116px] overflow-hidden rounded-[16px] bg-[#A2D2FF] shadow-[0_12px_26px_rgba(34,43,64,0.12)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        featuredCitiesVisible
+                          ? "translate-y-0 scale-100"
+                          : "translate-y-4 scale-[0.96]"
+                      }`}
+                      style={{ transitionDelay: `${160 + index * 70}ms` }}
+                    >
                       <Image
                         src={city.image}
                         alt={city.name}
                         fill
                         sizes="116px"
-                        className="object-cover"
+                        className={`object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                          featuredCitiesVisible
+                            ? "scale-100 opacity-100"
+                            : "scale-[1.08] opacity-0"
+                        }`}
+                        style={{ transitionDelay: `${200 + index * 70}ms` }}
                       />
                       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(125,16,26,0.25)_0%,rgba(125,16,26,0.58)_100%)]" />
                     </div>
-                    <p className="mt-3 text-[16px] font-semibold text-[#1f2734]">
+                    <p
+                      className={`mt-3 text-[16px] font-semibold text-[#1f2734] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        featuredCitiesVisible
+                          ? "translate-y-0 opacity-100"
+                          : "translate-y-3 opacity-0"
+                      }`}
+                      style={{ transitionDelay: `${240 + index * 70}ms` }}
+                    >
                       {city.name}
                     </p>
                   </button>
@@ -1470,6 +1533,7 @@ export default function Home() {
 
       {isAdmissionModalOpen ? (
         <div
+          onClick={handleCloseAdmissionModal}
           className={`fixed inset-0 z-[80] flex items-center justify-center px-4 py-6 backdrop-blur-[4px] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             isAdmissionModalClosing
               ? "bg-[#071528]/0 opacity-0"
@@ -1477,6 +1541,7 @@ export default function Home() {
           }`}
         >
           <div
+            onClick={(event) => event.stopPropagation()}
             className={`relative w-full max-w-[980px] overflow-hidden rounded-[28px] bg-white shadow-[0_28px_90px_rgba(7,21,40,0.28)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
               isAdmissionModalClosing
                 ? "translate-y-6 scale-[0.94] opacity-0"
@@ -1487,7 +1552,7 @@ export default function Home() {
               type="button"
               aria-label="Close admission form"
               onClick={handleCloseAdmissionModal}
-              className="absolute right-5 top-5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e1ea] bg-white text-[#1f2734] transition-colors hover:bg-[#f4f8fb]"
+              className="absolute right-5 top-5 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e1ea] bg-white text-[#1f2734] transition-colors hover:bg-[#f4f8fb]"
             >
               <svg
                 aria-hidden="true"
@@ -1552,9 +1617,8 @@ export default function Home() {
                   <input
                     type="text"
                     value={admissionForm.countryCode}
-                    onChange={(event) =>
-                      handleAdmissionFormChange("countryCode", event.target.value)
-                    }
+                    readOnly
+                    aria-label="Country code"
                     className="h-12 rounded-[16px] border border-[#d4dde8] px-4 text-[15px] text-[#1f2734] outline-none transition-colors focus:border-[#A2D2FF]"
                   />
                   <input
