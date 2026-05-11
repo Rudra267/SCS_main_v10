@@ -147,7 +147,7 @@ export default function PrimaryHousesPage() {
                 Sri Chaitanya
               </span>
               <span className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6f7f91]">
-                Primary Houses
+                CBSE Houses
               </span>
             </span>
           </Link>
@@ -186,7 +186,7 @@ export default function PrimaryHousesPage() {
               style={{ fontFamily: "var(--font-cinzel)" }}
               className="wave-reveal-heading text-[40px] font-black leading-[0.96] tracking-[-0.03em] sm:text-[52px] lg:text-[64px]"
             >
-              <span>Primary</span> <span>Houses</span>
+              <span>CBSE</span> <span>Houses</span>
             </h1>
             <p
               data-section-reveal
@@ -197,6 +197,72 @@ export default function PrimaryHousesPage() {
               abilities among students. Every student becomes part of a house
               community where healthy competition and team spirit grow together.
             </p>
+          </div>
+        </div>
+      </section>
+
+            <section className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        <div className="mx-auto w-full max-w-[1510px]">
+          <div className="max-w-[820px]">
+            <p
+              data-section-reveal
+              className="section-reveal-up text-[13px] font-extrabold uppercase tracking-[0.24em] text-[#2f6fa8]"
+            >
+              The Houses
+            </p>
+            <h2
+              data-wave-reveal
+              style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
+              className="wave-reveal-heading mt-4 text-[38px] font-light leading-[1] tracking-[-0.05em] text-[#1f2734] sm:text-[56px]"
+            >
+              <span>Four</span> <span>identities,</span>{" "}
+              <span className="font-extrabold">one spirit</span>
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-6 lg:grid-cols-2">
+            {houses.map((house, index) => (
+              <article
+                key={house.name}
+                data-section-reveal
+                className="section-reveal-up group grid overflow-hidden rounded-[8px] border border-[#dce9f4] bg-white shadow-[0_22px_55px_rgba(17,37,63,0.09)] sm:grid-cols-[0.72fr_1fr]"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                <div className="relative min-h-[260px] overflow-hidden">
+                  <Image
+                    src={house.image}
+                    alt={house.name}
+                    fill
+                    sizes="(max-width: 1023px) 100vw, 34vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                  />
+                  <div
+                    className="absolute inset-0 opacity-40"
+                    style={{ backgroundColor: house.accent }}
+                  />
+                </div>
+                <div className="flex min-h-[260px] flex-col justify-between p-8">
+                  <div>
+                    <span
+                      className="inline-flex rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.2em]"
+                      style={{ backgroundColor: house.soft, color: house.accent }}
+                    >
+                      House 0{index + 1}
+                    </span>
+                    <h3 className="mt-6 text-[30px] font-extrabold leading-tight tracking-[-0.04em] text-[#17314a]">
+                      {house.name}
+                    </h3>
+                    <p className="mt-4 text-[16px] leading-7 text-[#5a6572]">
+                      {house.line}
+                    </p>
+                  </div>
+                  <div
+                    className="mt-8 h-1.5 w-24 rounded-full transition-all duration-500 group-hover:w-36"
+                    style={{ backgroundColor: house.accent }}
+                  />
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -300,71 +366,7 @@ export default function PrimaryHousesPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="mx-auto w-full max-w-[1510px]">
-          <div className="max-w-[820px]">
-            <p
-              data-section-reveal
-              className="section-reveal-up text-[13px] font-extrabold uppercase tracking-[0.24em] text-[#2f6fa8]"
-            >
-              The Houses
-            </p>
-            <h2
-              data-wave-reveal
-              style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-              className="wave-reveal-heading mt-4 text-[38px] font-light leading-[1] tracking-[-0.05em] text-[#1f2734] sm:text-[56px]"
-            >
-              <span>Four</span> <span>identities,</span>{" "}
-              <span className="font-extrabold">one spirit</span>
-            </h2>
-          </div>
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-2">
-            {houses.map((house, index) => (
-              <article
-                key={house.name}
-                data-section-reveal
-                className="section-reveal-up group grid overflow-hidden rounded-[8px] border border-[#dce9f4] bg-white shadow-[0_22px_55px_rgba(17,37,63,0.09)] sm:grid-cols-[0.72fr_1fr]"
-                style={{ animationDelay: `${index * 90}ms` }}
-              >
-                <div className="relative min-h-[260px] overflow-hidden">
-                  <Image
-                    src={house.image}
-                    alt={house.name}
-                    fill
-                    sizes="(max-width: 1023px) 100vw, 34vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                  />
-                  <div
-                    className="absolute inset-0 opacity-40"
-                    style={{ backgroundColor: house.accent }}
-                  />
-                </div>
-                <div className="flex min-h-[260px] flex-col justify-between p-8">
-                  <div>
-                    <span
-                      className="inline-flex rounded-full px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.2em]"
-                      style={{ backgroundColor: house.soft, color: house.accent }}
-                    >
-                      House 0{index + 1}
-                    </span>
-                    <h3 className="mt-6 text-[30px] font-extrabold leading-tight tracking-[-0.04em] text-[#17314a]">
-                      {house.name}
-                    </h3>
-                    <p className="mt-4 text-[16px] leading-7 text-[#5a6572]">
-                      {house.line}
-                    </p>
-                  </div>
-                  <div
-                    className="mt-8 h-1.5 w-24 rounded-full transition-all duration-500 group-hover:w-36"
-                    style={{ backgroundColor: house.accent }}
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

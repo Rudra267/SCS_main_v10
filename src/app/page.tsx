@@ -8,7 +8,7 @@ const navLinks = [
   {
     label: "About",
     href: "/",
-    submenu: ["Our School", "Primary Houses", "Leading from the front"],
+    submenu: ["Our School", "CBSE Houses", "Leading from the front"],
   },
   { label: "Curriculum", href: "/" },
   { label: "Life With Us", href: "/" },
@@ -24,7 +24,7 @@ const announcementMessage =
 const isUnderMaintenance = false;
 
 const getSubmenuHref = (label: string) =>
-  label === "Primary Houses" ? "/aboutus/primary-houses" : "/";
+  label === "CBSE Houses" ? "/aboutus/cbse-houses" : "/";
 
 const legacyStats = [
   {
