@@ -8,7 +8,7 @@ const navLinks = [
   {
     label: "About",
     href: "/",
-    submenu: ["Our School", "CBSE Houses", "Leading from the front"],
+    submenu: ["Our School", "CBSE Houses"],
   },
   { label: "Curriculum", href: "/" },
   { label: "Life With Us", href: "/" },
