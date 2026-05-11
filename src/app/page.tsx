@@ -8,7 +8,7 @@ const navLinks = [
   {
     label: "About",
     href: "/",
-    submenu: ["Our School", "The Making of Suchitra", "Leading from the front"],
+    submenu: ["Our School", "Primary Houses", "Leading from the front"],
   },
   { label: "Curriculum", href: "/" },
   { label: "Life With Us", href: "/" },
@@ -23,47 +23,50 @@ const announcementMessage =
 
 const isUnderMaintenance = false;
 
+const getSubmenuHref = (label: string) =>
+  label === "Primary Houses" ? "/aboutus/primary-houses" : "/";
+
 const legacyStats = [
   {
-    value: "154+",
-    label: "Programs",
-    description: "Industry-Oriented Academic Programs",
+    value: "950+",
+    label: "Schools",
+    description: "Academic Excellence Across India",
   },
   {
-    value: "980+",
-    label: "Stalwarts",
-    description: "Industry Stalwarts for Top-Tier Mentorship",
+    value: "9,50,000+",
+    label: "Students",
+    description: "Shaping Future Achievers",
   },
   {
-    value: "1350+",
-    label: "Faculty",
-    description: "Doctoral Faculty",
+    value: "55,000+",
+    label: "Staffs",
+    description: "Experienced Teaching & Support Team",
   },
   {
-    value: "300+",
-    label: "International Faculty",
-    description: "Global Academic Expertise",
+    value: "41+",
+    label: "Years",
+    description: "Trusted Educational Legacy",
   },
 ];
 
 const legacyStatCardStyles = [
   {
-    accent: "#A2D2FF",
+    accent: "#3777b3",
     soft: "rgba(162,210,255,0.16)",
     border: "rgba(162,210,255,0.34)",
   },
   {
-    accent: "#98F5E1",
+    accent: "#41bda2",
     soft: "rgba(152,245,225,0.16)",
     border: "rgba(152,245,225,0.34)",
   },
   {
-    accent: "#CDB4DB",
+    accent: "#ba62ec",
     soft: "rgba(205,180,219,0.16)",
     border: "rgba(205,180,219,0.34)",
   },
   {
-    accent: "#FFD6A5",
+    accent: "#d39345",
     soft: "rgba(255,214,165,0.18)",
     border: "rgba(255,214,165,0.34)",
   },
@@ -847,6 +850,10 @@ export default function Home() {
         <div className="relative z-10 mx-auto w-full max-w-[1510px] px-2 sm:px-2.5 lg:px-3">
           <div
             className={`flex items-center justify-between gap-4 py-3 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] min-[1317px]:mt-4 min-[1317px]:grid min-[1317px]:grid-cols-[240px_minmax(0,1fr)] min-[1317px]:items-center min-[1317px]:gap-0 min-[1317px]:rounded-[24px] min-[1317px]:border min-[1317px]:border-white/70 min-[1317px]:bg-white/92 min-[1317px]:px-5 min-[1317px]:py-3 min-[1317px]:shadow-[0_18px_48px_rgba(18,35,61,0.14)] min-[1317px]:backdrop-blur-xl ${headerEnterClass}`}
+            style={{
+              animation:
+                "navDropIn 880ms cubic-bezier(0.22,1,0.36,1) 100ms both",
+            }}
           >
             <Link
               href="/"
@@ -920,7 +927,7 @@ export default function Home() {
                             {item.submenu.map((subItem) => (
                               <Link
                                 key={subItem}
-                                href="/"
+                                href={getSubmenuHref(subItem)}
                                 className="block px-8 py-3 text-[15px] font-medium text-[#1f2734] transition-colors hover:bg-[#eef7ff] hover:text-[#6faee2]"
                               >
                                 {subItem}
@@ -1046,7 +1053,7 @@ export default function Home() {
                         {item.submenu.map((subItem) => (
                           <Link
                             key={subItem}
-                            href="/"
+                            href={getSubmenuHref(subItem)}
                             onClick={closeMenu}
                             className="block px-6 py-3 text-[15px] font-medium text-black transition-colors hover:text-[#6faee2]"
                           >
@@ -1940,21 +1947,33 @@ export default function Home() {
               data-section-reveal
               className="section-reveal-up mx-auto mt-6 max-w-[760px] text-[18px] leading-8 text-[#5a6572]"
             >
-              Find Sri Chaitanya campuses by state and district, then browse
-              schools, colleges, and coaching centers available in that region.
+              Find Sri Chaitanya campuses by board, state, city, and branch,
+              then browse schools, colleges, and coaching centers available in
+              that region.
             </p>
           </div>
 
           <div
             data-section-reveal
-            className="section-reveal-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="section-reveal-up mt-10 grid grid-cols-1 items-center justify-center gap-4 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(180px,220px))_auto]"
             style={{ animationDelay: "120ms" }}
           >
+            <label className="block">
+              <span className="sr-only">Board</span>
+              <select
+                defaultValue="cbse"
+                className="h-13 w-full rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
+              >
+                <option value="cbse">CBSE</option>
+                <option value="state-board">State Board</option>
+                <option value="icse">ICSE</option>
+              </select>
+            </label>
             <label className="block">
               <span className="sr-only">State</span>
               <select
                 defaultValue="telangana"
-                className="h-13 min-w-[260px] rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
+                className="h-13 w-full rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
               >
                 <option value="telangana">Telangana</option>
                 <option value="andhra-pradesh">Andhra Pradesh</option>
@@ -1962,16 +1981,34 @@ export default function Home() {
               </select>
             </label>
             <label className="block">
-              <span className="sr-only">District</span>
+              <span className="sr-only">City</span>
               <select
-                defaultValue="rangareddy"
-                className="h-13 min-w-[260px] rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
+                defaultValue="hyderabad"
+                className="h-13 w-full rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
               >
-                <option value="rangareddy">Rangareddy</option>
                 <option value="hyderabad">Hyderabad</option>
-                <option value="medchal">Medchal</option>
+                <option value="rangareddy">Rangareddy</option>
+                <option value="secunderabad">Secunderabad</option>
               </select>
             </label>
+            <label className="block">
+              <span className="sr-only">Branch</span>
+              <select
+                defaultValue="ameerpet"
+                className="h-13 w-full rounded-[14px] border border-[#d9e4ef] bg-white px-5 text-[16px] font-medium text-[#17314a] outline-none shadow-[0_10px_24px_rgba(17,37,63,0.06)]"
+              >
+                <option value="ameerpet">Ameerpet</option>
+                <option value="kukatpally">Kukatpally</option>
+                <option value="dilsukhnagar">Dilsukhnagar</option>
+                <option value="miyapur">Miyapur</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              className="h-13 rounded-[14px] bg-[#1f2734] px-8 text-[16px] font-semibold text-white shadow-[0_14px_28px_rgba(31,39,52,0.18)] transition-colors duration-200 hover:bg-[#2f6fa8] sm:col-span-2 lg:col-span-1"
+            >
+              Search
+            </button>
           </div>
 
 
