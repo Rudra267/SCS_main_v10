@@ -170,7 +170,7 @@ export default function PrimaryHousesPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,20,36,0.86)_0%,rgba(10,20,36,0.68)_44%,rgba(10,20,36,0.18)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(38, 55, 83, 0.69)_0%,rgba(77, 97, 131, 0.67)_44%,rgba(10, 20, 36, 0.09)_100%)]" />
         </div>
 
         <div className="mx-auto flex min-h-[330px] w-full max-w-[1510px] items-center px-5 py-10 sm:min-h-[350px] sm:px-8 lg:min-h-[360px] lg:px-10">
