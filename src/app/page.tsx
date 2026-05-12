@@ -432,7 +432,6 @@ export default function Home() {
   const legacyStatsRef = useRef<HTMLDivElement | null>(null);
   const storyCarouselRef = useRef<HTMLDivElement | null>(null);
   const featuredCitiesSectionRef = useRef<HTMLDivElement | null>(null);
-  const featuredCitiesPerView = 7;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
     "About",
@@ -442,6 +441,9 @@ export default function Home() {
   const [storyCardsPerView, setStoryCardsPerView] = useState(2);
   const [activeWhyChooseIndex, setActiveWhyChooseIndex] = useState(0);
   const [activeAboutPillarIndex, setActiveAboutPillarIndex] = useState(1);
+  const [featuredCitiesPerView, setFeaturedCitiesPerView] = useState(
+    featuredCities.length,
+  );
   const [featuredCityStartIndex, setFeaturedCityStartIndex] = useState(0);
   const [admissionsBannerIndex, setAdmissionsBannerIndex] = useState(0);
   const [aboutPillarsIntroVisible, setAboutPillarsIntroVisible] = useState(false);
@@ -577,6 +579,23 @@ export default function Home() {
     window.addEventListener("resize", syncStoryCardsPerView);
 
     return () => window.removeEventListener("resize", syncStoryCardsPerView);
+  }, []);
+
+  useEffect(() => {
+    const syncFeaturedCitiesPerView = () => {
+      const nextPerView =
+        window.innerWidth >= 1280 ? 7 : featuredCities.length;
+
+      setFeaturedCitiesPerView(nextPerView);
+      setFeaturedCityStartIndex((prev) =>
+        nextPerView >= featuredCities.length ? 0 : prev,
+      );
+    };
+
+    syncFeaturedCitiesPerView();
+    window.addEventListener("resize", syncFeaturedCitiesPerView);
+
+    return () => window.removeEventListener("resize", syncFeaturedCitiesPerView);
   }, []);
 
   useEffect(() => {
@@ -835,7 +854,7 @@ export default function Home() {
     : "-translate-y-2 opacity-95";
 
   return (
-    <main className="min-h-screen bg-[#f4fbff]">
+    <main className="min-h-screen overflow-x-clip bg-[#f4fbff]">
       <header
         className="fixed inset-x-0 top-0 z-50"
       >
@@ -849,7 +868,7 @@ export default function Home() {
         />
         <div className="relative z-10 mx-auto w-full max-w-[1510px] px-2 sm:px-2.5 lg:px-3">
           <div
-            className={`flex items-center justify-between gap-4 py-3 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] min-[1317px]:mt-4 min-[1317px]:grid min-[1317px]:grid-cols-[240px_minmax(0,1fr)] min-[1317px]:items-center min-[1317px]:gap-0 min-[1317px]:rounded-[24px] min-[1317px]:border min-[1317px]:border-white/70 min-[1317px]:bg-white/92 min-[1317px]:px-5 min-[1317px]:py-3 min-[1317px]:shadow-[0_18px_48px_rgba(18,35,61,0.14)] min-[1317px]:backdrop-blur-xl ${headerEnterClass}`}
+            className={`flex items-center justify-between gap-4 rounded-[18px] border border-white/55 bg-white/72 px-3 py-3 shadow-[0_14px_34px_rgba(18,35,61,0.12)] backdrop-blur-xl transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] min-[1317px]:mt-4 min-[1317px]:grid min-[1317px]:grid-cols-[240px_minmax(0,1fr)] min-[1317px]:items-center min-[1317px]:gap-0 min-[1317px]:rounded-[24px] min-[1317px]:border min-[1317px]:border-white/70 min-[1317px]:bg-white/92 min-[1317px]:px-5 min-[1317px]:py-3 min-[1317px]:shadow-[0_18px_48px_rgba(18,35,61,0.14)] min-[1317px]:backdrop-blur-xl ${headerEnterClass}`}
             style={{
               animation:
                 "navDropIn 880ms cubic-bezier(0.22,1,0.36,1) 100ms both",
@@ -991,7 +1010,35 @@ export default function Home() {
               isMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="flex items-center justify-end border-b border-[#e7e7e7] px-5 py-4">
+            <div className="flex items-center justify-between border-b border-[#e7e7e7] px-5 py-4">
+              <Link
+                href="/"
+                onClick={closeMenu}
+                className="flex items-center gap-3"
+                aria-label="Sri Chaitanya Schools Home"
+              >
+                <Image
+                  src="/logos/logo_transparent_fixed.png"
+                  alt="Sri Chaitanya Schools logo"
+                  width={92}
+                  height={92}
+                  className="h-11 w-auto"
+                />
+                <div className="flex flex-col">
+                  <span
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
+                    className="text-[16px] font-extrabold tracking-[-0.04em] text-[#17314a]"
+                  >
+                    Sri Chaitanya
+                  </span>
+                  <span
+                    style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
+                    className="mt-0.5 text-[10px] font-medium tracking-[-0.01em] text-[#5a6f86]"
+                  >
+                    Madhapur, Hyderabad
+                  </span>
+                </div>
+              </Link>
               <button
                 type="button"
                 aria-label="Close navigation menu"
@@ -1124,28 +1171,34 @@ export default function Home() {
         ) : null}
       </header>
 
-      <section>
+      <section className="home-hero-section pt-8 max-[600px]:pt-0 min-[1317px]:pt-0">
         <div className="relative w-full overflow-hidden">
-          <img
-            src="/header-new.png?v=20260508-1"
-            alt="Sri Chaitanya header banner"
-            loading="eager"
-            className="h-auto w-full"
-          />
+          <picture className="home-hero-media block">
+            <source
+              media="(max-width: 600px)"
+              srcSet="/mobile-header.png?v=20260508-1"
+            />
+            <img
+              src="/header-new.png?v=20260508-1"
+              alt="Sri Chaitanya header banner"
+              loading="eager"
+              className="home-hero-image block h-auto w-full"
+            />
+          </picture>
           <div className="absolute inset-0 z-[2] flex w-full items-start">
-            <div className="px-5 pt-[14%] sm:px-8 sm:pt-[13%] lg:px-12 lg:pt-[12%] xl:px-16 xl:pt-[10.5%]">
-              <div className="ml-4 max-w-[560px] sm:ml-8 lg:ml-12 xl:ml-42 xl:max-w-[640px]">
+            <div className="home-hero-content-frame px-5 pt-[14%] sm:px-8 sm:pt-[13%] lg:px-12 lg:pt-[12%] xl:px-16 xl:pt-[10.5%]">
+              <div className="home-hero-copy ml-4 max-w-[560px] sm:ml-8 lg:ml-12 xl:max-w-[640px]">
                 <p
                   data-section-reveal
-                  className="section-reveal-up inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.24em] text-[#31435f] shadow-[0_10px_24px_rgba(49,67,95,0.08)] backdrop-blur-[6px] sm:text-[12px]"
+                  className="home-hero-eyebrow section-reveal-up inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/50 px-2 py-1 text-[6px] font-bold uppercase tracking-[0.24em] text-[#31435f] shadow-[0_10px_24px_rgba(49,67,95,0.08)] backdrop-blur-[6px] sm:gap-2 sm:px-3 sm:py-1.5 sm:text-[8px] md:text-[9px] lg:gap-3 lg:px-4 lg:py-2 lg:text-[12px]"
                   style={{ animationDelay: "80ms" }}
                 >
-                  <span className="h-2 w-2 rounded-full bg-[#A2D2FF]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#A2D2FF] lg:h-2 lg:w-2" />
                   Future-Ready Learning
                 </p>
                 <h1
                   style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-                  className="mt-5 max-w-[620px] text-[25px] font-light leading-[0.98] tracking-[-0.06em] text-[#31435f] sm:text-[50px] lg:text-[60px] xl:text-[60px]"
+                  className="home-hero-title mt-3 max-w-[620px] text-[25px] font-light leading-[0.98] tracking-[-0.06em] text-[#31435f] sm:mt-4 sm:text-[32px] md:text-[34px] lg:mt-5 lg:text-[60px] xl:text-[60px]"
                 >
                   <span
                     className="block"
@@ -1176,7 +1229,7 @@ export default function Home() {
                   </span>
                 </h1>
                 <p
-                  className="mt-6 max-w-[520px] text-[14px] leading-7 text-[#304256] sm:text-[16px] lg:text-[18px]"
+                  className="home-hero-description mt-3 max-w-[245px] text-[9px] leading-[1.5] text-[#304256] sm:mt-4 sm:max-w-[360px] sm:text-[13px] sm:leading-[1.6] lg:mt-6 lg:max-w-[520px] lg:text-[18px] lg:leading-7"
                   style={{
                     animation:
                       "heroTextReveal 980ms cubic-bezier(0.22,1,0.36,1) 520ms both",
@@ -1187,16 +1240,16 @@ export default function Home() {
                 </p>
                 <Link
                   href="/"
-                  className="group relative mt-8 inline-flex min-h-[54px] min-w-[196px] items-center justify-center overflow-hidden rounded-[6px] bg-[#FFD6A5] px-8 py-4 text-[14px] font-extrabold uppercase leading-none tracking-[0.04em] !text-[#17314a] shadow-[0_14px_28px_rgba(255,214,165,0.30)] transition-transform duration-300 ease-out hover:-translate-y-0.5"
+                  className="home-hero-action group relative mt-4 inline-flex min-h-[28px] min-w-[128px] items-center justify-center overflow-hidden rounded-[6px] bg-[#FFD6A5] px-4 py-2 text-[7px] font-extrabold uppercase leading-none tracking-[0.04em] !text-[#17314a] shadow-[0_14px_28px_rgba(255,214,165,0.30)] transition-transform duration-300 ease-out hover:-translate-y-0.5 sm:mt-5 sm:min-h-[36px] sm:min-w-[170px] sm:px-6 sm:py-3 sm:text-[10px] lg:mt-8 lg:min-h-[54px] lg:min-w-[196px] lg:px-8 lg:py-4 lg:text-[14px]"
                 >
                   <span className="absolute inset-0 bg-black/20 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-origin:left_center] scale-x-0 group-hover:scale-x-100" />
-                  <span className="relative z-10 inline-flex items-center gap-4">
+                  <span className="relative z-10 inline-flex items-center gap-2 sm:gap-3 lg:gap-4">
                     <span>Admission For 2026-2027</span>
                     <svg
                       aria-hidden="true"
                       viewBox="0 0 20 20"
                       fill="none"
-                      className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                      className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1 lg:h-4 lg:w-4"
                     >
                       <path
                         d="M3.75 10h12.5M11.25 5.5 16.25 10l-5 4.5"
@@ -1269,11 +1322,11 @@ export default function Home() {
 
       <section className="bg-white px-2 py-18 sm:px-2.5 sm:py-24 lg:px-3 lg:py-28">
         <div className="mx-auto w-full max-w-[1510px]">
-          <div className="mx-auto max-w-[980px] text-center">
+          <div className="mx-auto w-[80vw] max-w-[980px] text-center xl:w-auto">
             <h2
               data-wave-reveal
               style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-              className="wave-reveal-heading text-[34px] font-medium leading-[1.08] tracking-[-0.05em] text-black sm:text-[46px] lg:text-[60px]"
+              className="wave-reveal-heading mx-auto w-full text-[34px] font-medium leading-[1.08] tracking-[-0.05em] text-black sm:text-[46px] lg:text-[60px]"
             >
               <span className="font-semibold">An</span>{" "}
               <span className="font-light">Illustrious</span>{" "}
@@ -1284,7 +1337,7 @@ export default function Home() {
 
           <div
             ref={legacyStatsRef}
-            className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-4"
+            className="mx-auto mt-14 grid max-w-[680px] grid-cols-2 justify-items-center gap-x-4 gap-y-8 sm:gap-x-8 sm:gap-y-12 xl:mx-0 xl:max-w-none xl:justify-items-start xl:grid-cols-4"
           >
             {legacyStats.map((stat, index) => (
               <article
@@ -1295,7 +1348,7 @@ export default function Home() {
                     legacyStatCardStyles[index % legacyStatCardStyles.length].border,
                   transitionDelay: `${index * 90}ms`,
                 }}
-                className={`flex h-full max-w-[270px] flex-col rounded-[24px] border px-6 pb-7 pt-6 shadow-[0_18px_36px_rgba(17,34,68,0.08)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_24px_44px_rgba(17,34,68,0.12)] ${
+                className={`flex h-full w-full max-w-[270px] flex-col rounded-[18px] border px-4 pb-5 pt-5 shadow-[0_18px_36px_rgba(17,34,68,0.08)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_24px_44px_rgba(17,34,68,0.12)] sm:rounded-[24px] sm:px-6 sm:pb-7 sm:pt-6 ${
                   legacyStatsVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-8 opacity-0"
@@ -1303,7 +1356,7 @@ export default function Home() {
               >
                 <p
                   style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-                  className="text-[48px] font-extrabold leading-none tracking-[-0.05em] sm:text-[56px]"
+                    className="text-[34px] font-extrabold leading-none tracking-[-0.05em] sm:text-[56px]"
                 >
                   <span
                     style={{
@@ -1321,7 +1374,7 @@ export default function Home() {
                       legacyStatCardStyles[index % legacyStatCardStyles.length]
                         .accent,
                   }}
-                  className="mt-4 min-h-[40px] max-w-[210px] text-[12px] font-bold uppercase leading-[1.35] tracking-[0.14em]"
+                  className="mt-3 min-h-[32px] max-w-[210px] text-[10px] font-bold uppercase leading-[1.35] tracking-[0.14em] sm:mt-4 sm:min-h-[40px] sm:text-[12px]"
                 >
                   {stat.label}
                 </h3>
@@ -1331,9 +1384,9 @@ export default function Home() {
                       legacyStatCardStyles[index % legacyStatCardStyles.length]
                         .accent,
                   }}
-                  className="mt-4 h-[3px] w-12 rounded-full"
+                className="mt-3 h-[3px] w-10 rounded-full sm:mt-4 sm:w-12"
                 />
-                <p className="mt-5 max-w-[220px] text-[15px] leading-6 text-[#282828]">
+                <p className="mt-4 max-w-[220px] text-[13px] leading-5 text-[#282828] sm:mt-5 sm:text-[15px] sm:leading-6">
                   {stat.description}
                 </p>
               </article>
@@ -1361,7 +1414,7 @@ export default function Home() {
             <div className="mt-8 flex items-center justify-center gap-4">
               <button
                 type="button"
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#171717] text-[24px] text-white transition-colors hover:bg-black/85"
+                className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#171717] text-[24px] text-white transition-colors hover:bg-black/85 xl:inline-flex"
                 onClick={handleFeaturedCityPrev}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
@@ -1375,7 +1428,7 @@ export default function Home() {
                 </svg>
               </button>
 
-              <div className="grid min-w-0 flex-1 gap-4 sm:grid-cols-3 xl:grid-cols-7">
+              <div className="grid min-w-0 flex-1 grid-cols-3 gap-3 sm:gap-4 xl:grid-cols-7">
                 {visibleFeaturedCities.map((city, index) => (
                   <button
                     type="button"
@@ -1389,7 +1442,7 @@ export default function Home() {
                     style={{ transitionDelay: `${120 + index * 70}ms` }}
                   >
                     <div
-                      className={`relative mx-auto h-[96px] w-[116px] overflow-hidden rounded-[16px] bg-[#A2D2FF] shadow-[0_12px_26px_rgba(34,43,64,0.12)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      className={`relative mx-auto h-[74px] w-[82px] overflow-hidden rounded-[14px] bg-[#A2D2FF] shadow-[0_12px_26px_rgba(34,43,64,0.12)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:h-[96px] sm:w-[116px] sm:rounded-[16px] ${
                         featuredCitiesVisible
                           ? "translate-y-0 scale-100"
                           : "translate-y-4 scale-[0.96]"
@@ -1400,7 +1453,7 @@ export default function Home() {
                         src={city.image}
                         alt={city.name}
                         fill
-                        sizes="116px"
+                        sizes="(max-width: 639px) 82px, 116px"
                         className={`object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                           featuredCitiesVisible
                             ? "scale-100 opacity-100"
@@ -1411,7 +1464,7 @@ export default function Home() {
                       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(125,16,26,0.25)_0%,rgba(125,16,26,0.58)_100%)]" />
                     </div>
                     <p
-                      className={`mt-3 text-[16px] font-semibold text-[#1f2734] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                      className={`mt-2 text-[13px] font-semibold text-[#1f2734] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] sm:mt-3 sm:text-[16px] ${
                         featuredCitiesVisible
                           ? "translate-y-0 opacity-100"
                           : "translate-y-3 opacity-0"
@@ -1426,7 +1479,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#171717] text-[24px] text-white transition-colors hover:bg-black/85"
+                className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#171717] text-[24px] text-white transition-colors hover:bg-black/85 xl:inline-flex"
                 onClick={handleFeaturedCityNext}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
@@ -1519,16 +1572,16 @@ export default function Home() {
                             ? "panelContentReveal 720ms cubic-bezier(0.22,1,0.36,1) both"
                             : undefined,
                         }}
-                        className="absolute inset-x-0 bottom-0 p-6 sm:p-8"
+                        className="absolute inset-x-0 bottom-0 p-4 sm:p-6 lg:p-8"
                       >
                         <h3
                           style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-                          className="text-[34px] font-extrabold leading-none tracking-[-0.04em] text-white sm:text-[48px]"
+                          className="text-[22px] font-extrabold leading-none tracking-[-0.04em] text-white sm:text-[30px] md:text-[36px] lg:text-[48px]"
                         >
                           {pillar.title}
                         </h3>
-                        <div className="mt-4 h-px w-16 bg-white/70" />
-                        <p className="mt-5 max-w-[560px] text-[15px] leading-6 text-white/82 sm:text-[17px]">
+                        <div className="mt-2 h-px w-12 bg-white/70 sm:mt-3 sm:w-16 lg:mt-4" />
+                        <p className="mt-3 max-w-[560px] text-[12px] leading-5 text-white/82 sm:mt-4 sm:text-[14px] sm:leading-6 lg:mt-5 lg:text-[17px]">
                           {pillar.description}
                         </p>
                       </div>
@@ -1546,11 +1599,9 @@ export default function Home() {
                       </span>
                       <span
                         style={{
-                          writingMode: "vertical-rl",
-                          transform: "rotate(180deg)",
                           fontFamily: "var(--font-plus-jakarta-sans)",
                         }}
-                        className="text-center text-[18px] font-medium tracking-[-0.02em] text-[#12263f] xl:text-[20px]"
+                        className="global-pillar-label text-center text-[18px] font-medium tracking-[-0.02em] text-[#12263f] xl:text-[20px]"
                       >
                         {pillar.label}
                       </span>
@@ -1770,7 +1821,7 @@ export default function Home() {
             <h2
               data-wave-reveal
               style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-              className="wave-reveal-heading mt-3 text-[60px] font-light leading-[0.96] tracking-[-0.055em] text-[#1b2840]"
+              className="wave-reveal-heading mt-3 text-[34px] font-light leading-[0.98] tracking-[-0.05em] text-[#1b2840] sm:text-[46px] lg:text-[60px] lg:leading-[0.96] lg:tracking-[-0.055em]"
             >
               <span className="font-extrabold">Pioneering</span>{" "}
               <span className="font-light">Success Stories</span>
@@ -1831,7 +1882,7 @@ export default function Home() {
                   key={`${story.name}-${index}`}
                   className="group relative min-w-full shrink-0 snap-start overflow-hidden rounded-[10px] bg-[#CDB4DB] shadow-[0_24px_60px_rgba(80,72,110,0.16)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] xl:min-w-[calc(50%-10px)]"
                 >
-                  <div className="relative min-h-[360px] w-full sm:min-h-[440px] lg:min-h-[520px]">
+                  <div className="relative min-h-[260px] w-full sm:min-h-[340px] lg:min-h-[520px]">
                     <Image
                       src={story.image}
                       alt={story.name}
@@ -1840,14 +1891,14 @@ export default function Home() {
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(152,245,225,0.08)_0%,rgba(162,210,255,0.12)_38%,rgba(109,76,132,0.72)_100%)]" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+                    <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-6 lg:p-8">
                       <h3
                         style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-                        className="text-[30px] font-extrabold leading-none tracking-[-0.04em] sm:text-[44px]"
+                        className="text-[24px] font-extrabold leading-none tracking-[-0.04em] sm:text-[34px] lg:text-[44px]"
                       >
                         {story.quoteTitle}
                       </h3>
-                      <p className="mt-4 text-[15px] font-medium uppercase tracking-[0.14em] text-white/86">
+                      <p className="mt-3 text-[12px] font-medium uppercase tracking-[0.14em] text-white/86 sm:text-[13px] lg:mt-4 lg:text-[15px]">
                         {story.name} {"|"} {story.role}
                       </p>
                     </div>
@@ -1890,7 +1941,7 @@ export default function Home() {
                 className={`campus-card-reveal group relative overflow-hidden rounded-[8px] bg-[#101726] shadow-[0_14px_34px_rgba(20,30,48,0.10)] ${item.span}`}
                 style={{ animationDelay: `${index * 90}ms` }}
               >
-                <div className={`relative h-full w-full ${item.aspect}`}>
+                <div className={`relative h-[220px] w-full sm:h-[280px] lg:h-full ${item.aspect}`}>
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -2120,7 +2171,7 @@ export default function Home() {
                 className="section-reveal-up overflow-hidden rounded-[24px] bg-white shadow-[0_16px_40px_rgba(17,34,68,0.10)]"
                 style={{ animationDelay: `${index * 110}ms` }}
               >
-                <div className="relative aspect-[16/10] w-full">
+                <div className="relative h-[220px] w-full sm:h-[280px] lg:aspect-[16/10] lg:h-auto">
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -2131,22 +2182,22 @@ export default function Home() {
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,16,29,0.04)_0%,rgba(9,16,29,0.12)_45%,rgba(9,16,29,0.74)_100%)]" />
                 </div>
 
-                <div className="p-6 sm:p-7">
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-[#7c8796]">
+                <div className="p-4 sm:p-5 lg:p-7">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c8796] sm:text-[12px] lg:text-[13px]">
                     {item.handle}
                   </p>
                   <h3
                     style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-                    className="mt-4 text-[28px] font-extrabold leading-[1.04] tracking-[-0.04em] text-[#1f2734]"
+                    className="mt-3 text-[22px] font-extrabold leading-[1.04] tracking-[-0.04em] text-[#1f2734] sm:text-[24px] lg:mt-4 lg:text-[28px]"
                   >
                     {item.title}
                   </h3>
-                  <p className="mt-4 text-[16px] leading-8 text-[#5a6572]">
+                  <p className="mt-3 text-[14px] leading-6 text-[#5a6572] lg:mt-4 lg:text-[16px] lg:leading-8">
                     {item.description}
                   </p>
                   <Link
                     href="/"
-                    className="mt-6 inline-flex items-center gap-3 text-[15px] font-semibold text-[#6faee2] transition-colors hover:text-[#7bcfbe]"
+                    className="mt-4 inline-flex items-center gap-3 text-[14px] font-semibold text-[#6faee2] transition-colors hover:text-[#7bcfbe] lg:mt-6 lg:text-[15px]"
                   >
                     View Update
                     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
