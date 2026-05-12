@@ -366,7 +366,6 @@ export default function PrimaryHousesPage() {
         </div>
       </section>
 
-
     </main>
   );
 }
