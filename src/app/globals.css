@@ -81,12 +81,12 @@ body {
   }
 
   .home-hero-description {
-    font-size: 12px !important;
+    font-size: 15px !important;
     line-height: 1.55 !important;
   }
 
   .home-hero-action {
-    font-size: 8px !important;
+    font-size: 10.5px !important;
   }
 }
 
@@ -322,7 +322,8 @@ a {
 }
 
 .section-reveal-right.is-visible {
-  animation: sectionSlideRight 900ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+  animation: sectionSlideRight 900ms cubic-bezier(0.22, 1, 0.36, 1) 120ms
+    forwards;
 }
 
 .section-reveal-up.is-visible {

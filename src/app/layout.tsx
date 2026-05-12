@@ -43,6 +43,10 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "Sri Chaitanya Schools",
   description: "Sri Chaitanya Schools homepage",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
