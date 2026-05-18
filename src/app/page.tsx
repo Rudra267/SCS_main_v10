@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -312,7 +312,7 @@ const socialNewsItems = [
     title: "Student success story and mentorship spotlight",
     description:
       "A featured story sharing how structured mentoring, discipline, and guidance shaped a high-achieving learner journey.",
-    image: "/imageSection/3.jpeg",
+    image: "/imageSection/3.avif",
     accent: "bg-[#379BD3]",
   },
   {
@@ -432,6 +432,7 @@ export default function Home() {
   const legacyStatsRef = useRef<HTMLDivElement | null>(null);
   const storyCarouselRef = useRef<HTMLDivElement | null>(null);
   const featuredCitiesSectionRef = useRef<HTMLDivElement | null>(null);
+  const campusGalleryRef = useRef<HTMLDivElement | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
     "About",
@@ -448,6 +449,7 @@ export default function Home() {
   const [admissionsBannerIndex, setAdmissionsBannerIndex] = useState(0);
   const [aboutPillarsIntroVisible, setAboutPillarsIntroVisible] = useState(false);
   const [featuredCitiesVisible, setFeaturedCitiesVisible] = useState(false);
+  const [campusGalleryVisible, setCampusGalleryVisible] = useState(false);
   const [isAdmissionModalOpen, setIsAdmissionModalOpen] = useState(false);
   const [isAdmissionModalClosing, setIsAdmissionModalClosing] = useState(false);
   const [admissionForm, setAdmissionForm] = useState({
@@ -482,7 +484,7 @@ export default function Home() {
     setFeaturedCityStartIndex((prev) => (prev + 1) % featuredCities.length);
   };
 
-  const cycleStudentStories = (step: number) => {
+  const cycleStudentStories = useCallback((step: number) => {
     const maxStartIndex = Math.max(studentStories.length - storyCardsPerView, 0);
 
     setActiveStoryIndex((prev) => {
@@ -496,7 +498,7 @@ export default function Home() {
 
       return prev + step;
     });
-  };
+  }, [storyCardsPerView]);
 
   const handleOpenAdmissionModal = (cityName: string) => {
     const cityBranches = admissionBranchesByCity[cityName] ?? [];
@@ -606,8 +608,13 @@ export default function Home() {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setFeaturedCitiesVisible(entry.isIntersecting);
+      ([entry], currentObserver) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        setFeaturedCitiesVisible(true);
+        currentObserver.unobserve(section);
       },
       {
         threshold: 0.25,
@@ -621,31 +628,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!featuredCitiesVisible) {
-      return;
-    }
-
-    setFeaturedCitiesVisible(false);
-
-    const frameId = window.requestAnimationFrame(() => {
-      setFeaturedCitiesVisible(true);
-    });
-
-    return () => window.cancelAnimationFrame(frameId);
-  }, [featuredCityStartIndex]);
-
-  useEffect(() => {
     const intervalId = window.setInterval(() => {
       cycleStudentStories(1);
     }, 3600);
 
     return () => window.clearInterval(intervalId);
-  }, [storyCardsPerView]);
+  }, [cycleStudentStories]);
 
   useEffect(() => {
     const maxStartIndex = Math.max(studentStories.length - storyCardsPerView, 0);
 
-    setActiveStoryIndex((prev) => Math.min(prev, maxStartIndex));
+    const frameId = window.requestAnimationFrame(() => {
+      setActiveStoryIndex((prev) => Math.min(prev, maxStartIndex));
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, [storyCardsPerView]);
 
   useEffect(() => {
@@ -675,7 +672,7 @@ export default function Home() {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      ([entry], currentObserver) => {
         if (!entry) {
           return;
         }
@@ -683,21 +680,58 @@ export default function Home() {
         if (entry.intersectionRatio >= 0.35) {
           setAnimatedLegacyCounts(legacyStatTargets.map(() => 0));
           setLegacyStatsVisible(true);
+          currentObserver.unobserve(element);
           return;
-        }
-
-        if (entry.intersectionRatio <= 0.12) {
-          setLegacyStatsVisible(false);
-          setAnimatedLegacyCounts(legacyStatTargets.map(() => 0));
         }
       },
       {
-        threshold: [0.12, 0.35],
+        threshold: 0.35,
         rootMargin: "0px 0px -4% 0px",
       },
     );
 
     observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const gallery = campusGalleryRef.current;
+
+    if (!gallery) {
+      return;
+    }
+
+    const revealGallery = () => setCampusGalleryVisible(true);
+    const isGalleryInView = () => {
+      const rect = gallery.getBoundingClientRect();
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+
+      return rect.top <= viewportHeight * 0.88 && rect.bottom >= 0;
+    };
+
+    if (isGalleryInView()) {
+      revealGallery();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry], currentObserver) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        revealGallery();
+        currentObserver.unobserve(gallery);
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "0px 0px -4% 0px",
+      },
+    );
+
+    observer.observe(gallery);
 
     return () => observer.disconnect();
   }, []);
@@ -741,17 +775,21 @@ export default function Home() {
       return;
     }
 
+    const restartReveal = (element: HTMLElement, delay: number) => {
+      window.setTimeout(() => {
+        element.classList.remove("is-visible");
+        void element.offsetWidth;
+        element.classList.add("is-visible");
+      }, delay);
+    };
+
     const revealIfInView = (element: HTMLElement) => {
       const rect = element.getBoundingClientRect();
       const viewportHeight =
         window.innerHeight || document.documentElement.clientHeight;
 
       if (rect.top <= viewportHeight * 0.9 && rect.bottom >= 0) {
-        window.setTimeout(() => {
-          element.classList.remove("is-visible");
-          void element.offsetWidth;
-          element.classList.add("is-visible");
-        }, 60);
+        restartReveal(element, 60);
         return true;
       }
 
@@ -768,11 +806,9 @@ export default function Home() {
             return;
           }
 
-          window.setTimeout(() => {
-            element.classList.remove("is-visible");
-            void element.offsetWidth;
-            element.classList.add("is-visible");
-          }, 40);
+          if (!element.classList.contains("is-visible")) {
+            restartReveal(element, 40);
+          }
         });
       },
       {
@@ -783,14 +819,11 @@ export default function Home() {
 
     const frameId = window.requestAnimationFrame(() => {
       elements.forEach((element) => {
-        element.classList.remove("is-visible");
+        observer.observe(element);
 
         if (revealIfInView(element)) {
-          observer.observe(element);
           return;
         }
-
-        observer.observe(element);
       });
     });
 
@@ -809,31 +842,49 @@ export default function Home() {
       return;
     }
 
+    const revealIfInView = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect();
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+
+      if (rect.top <= viewportHeight * 0.92 && rect.bottom >= 0) {
+        window.setTimeout(() => {
+          element.classList.add("is-visible");
+        }, 40);
+        return true;
+      }
+
+      return false;
+    };
+
     const observer = new IntersectionObserver(
-      (entries) => {
+      (entries, currentObserver) => {
         entries.forEach((entry) => {
           const element = entry.target as HTMLElement;
 
           if (!entry.isIntersecting) {
-            element.classList.remove("is-visible");
             return;
           }
 
           window.setTimeout(() => {
-            element.classList.remove("is-visible");
-            void element.offsetWidth;
             element.classList.add("is-visible");
           }, 40);
+
+          currentObserver.unobserve(element);
         });
       },
       {
-        threshold: 0.2,
-        rootMargin: "0px 0px -10% 0px",
+        threshold: 0.01,
+        rootMargin: "0px 0px -4% 0px",
       },
     );
 
     const frameId = window.requestAnimationFrame(() => {
       elements.forEach((element) => {
+        if (revealIfInView(element)) {
+          return;
+        }
+
         observer.observe(element);
       });
     });
@@ -1496,21 +1547,33 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-white px-2 pb-18 pt-4 sm:px-2.5 sm:pb-24 lg:px-3 lg:pb-28">
+      <section className="bg-[#389CD3] px-2 pb-18 pt-18 sm:px-2.5 sm:pb-24 sm:pt-24 lg:px-3 lg:pb-28 lg:pt-28">
         <div className="mx-auto w-full max-w-[1510px]">
           <div className="mx-auto max-w-[1180px] text-center">
+            <p className="text-[14px] font-semibold uppercase tracking-[0.24em] text-white/85">
+              Beyond Boundaries
+            </p>
             <h2
-              data-wave-reveal
               style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-              className="wave-reveal-heading text-[34px] font-medium leading-[0.98] tracking-[-0.05em] text-black sm:text-[46px] lg:text-[60px]"
+              className="mt-5 text-[34px] font-medium leading-[0.98] tracking-[-0.05em] text-white sm:text-[46px] lg:text-[60px]"
             >
-              <span className="font-light">Immerse yourself</span>{" "}
-              <span className="font-extrabold">in a Global</span>
-              <span className="block font-extrabold">
-                Educational Experience with peers
+              <span className="font-mono font-light">Immerse yourself</span>{" "}
+              <span className="font-extrabold text-[#101726]">
+                in a Global
               </span>
-              <span className="block font-extrabold">accross states</span>
+              <span className="block font-extrabold text-[#101726]">
+                Educational Experience
+                <span className="text-white"> with peers</span>
+              </span>
+              <span className="block font-extrabold text-white">
+                across states
+              </span>
             </h2>
+            <p className="mx-auto mt-6 max-w-[760px] text-[18px] leading-8 text-white/82">
+              Discover collaborative programs, cultural exposure, research
+              pathways, and future-ready learning experiences that connect
+              students across regions.
+            </p>
           </div>
 
           <div className="mt-14 flex flex-col gap-3 xl:flex-row xl:items-stretch">
@@ -1809,7 +1872,7 @@ export default function Home() {
         </div>
       ) : null}
 
-      <section className="bg-[#CDB4DB] px-2 py-18 text-[#1b2840] sm:px-2.5 sm:py-24 lg:px-3 lg:py-28">
+      <section className="bg-white px-2 py-18 text-[#1b2840] sm:px-2.5 sm:py-24 lg:px-3 lg:py-28">
         <div className="mx-auto w-full max-w-[1510px]">
           <div className="max-w-[760px]">
             <p
@@ -1826,6 +1889,15 @@ export default function Home() {
               <span className="font-extrabold">Pioneering</span>{" "}
               <span className="font-light">Success Stories</span>
             </h2>
+            <p
+              data-section-reveal
+              className="section-reveal-up mt-6 max-w-[700px] text-[18px] leading-8 text-[#5a6572]"
+              style={{ animationDelay: "120ms" }}
+            >
+              Inspiring journeys from students who turned curiosity,
+              dedication, and mentorship into achievements across academics,
+              sports, and beyond.
+            </p>
           </div>
 
           <div className="relative mt-10 lg:mt-12">
@@ -1909,23 +1981,31 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-white px-2 pb-18 pt-8 sm:px-2.5 sm:pb-24 sm:pt-12 lg:px-3 lg:pb-28 lg:pt-14">
+      <section className="bg-[#B570DB] px-2 pb-18 pt-8 sm:px-2.5 sm:pb-24 sm:pt-12 lg:px-3 lg:pb-28 lg:pt-14">
         <div className="mx-auto w-full max-w-[1510px]">
           <div
             data-section-reveal
             className="section-reveal-up mx-auto max-w-[900px] text-center"
           >
+            <p className="text-[14px] font-semibold uppercase tracking-[0.24em] text-white/85">
+              Campus Moments
+            </p>
             <h2
               data-wave-reveal
               style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
-              className="wave-reveal-heading text-[34px] font-light leading-[0.98] tracking-[-0.05em] text-[#252525] sm:text-[46px] lg:text-[60px]"
+              className="wave-reveal-heading mt-5 text-[34px] font-light leading-[0.98] tracking-[-0.05em] text-[#252525] sm:text-[46px] lg:text-[60px]"
             >
-              <span className="font-light">Inside our </span>
-              <span className="font-extrabold">Campus</span>
+              <span className="font-extrabold text-[#101726]">
+                A Glimpse Into{" "}
+              </span>
+              <span className="font-mono font-normal text-white">
+                Campus
+              </span>
+              <span className="font-mono font-extrabold text-white"> Life</span>
             </h2>
             <p
               data-section-reveal
-              className="campus-description-reveal mx-auto mt-8 max-w-[560px] text-[18px] leading-8 text-[#555]"
+              className="campus-description-reveal mx-auto mt-8 max-w-[560px] text-[18px] leading-8 text-white/82"
               style={{ animationDelay: "140ms" }}
             >
               Experience a vibrant, safe and inspiring environment shaped by
@@ -1933,12 +2013,16 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-4 lg:grid-cols-5 lg:grid-rows-3">
+          <div
+            ref={campusGalleryRef}
+            className="mt-16 grid gap-4 lg:grid-cols-5 lg:grid-rows-3"
+          >
             {campusGalleryItems.map((item, index) => (
               <article
                 key={item.title}
-                data-section-reveal
-                className={`campus-card-reveal group relative overflow-hidden rounded-[8px] bg-[#101726] shadow-[0_14px_34px_rgba(20,30,48,0.10)] ${item.span}`}
+                className={`campus-card-reveal group relative overflow-hidden rounded-[8px] bg-[#101726] shadow-[0_14px_34px_rgba(20,30,48,0.10)] ${item.span} ${
+                  campusGalleryVisible ? "is-visible" : ""
+                }`}
                 style={{ animationDelay: `${index * 90}ms` }}
               >
                 <div className={`relative h-[220px] w-full sm:h-[280px] lg:h-full ${item.aspect}`}>
@@ -1951,8 +2035,9 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,15,24,0.02)_0%,rgba(10,15,24,0.08)_48%,rgba(10,15,24,0.78)_100%)]" />
                   <div
-                    data-section-reveal
-                    className="section-reveal-up absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-5 sm:p-6"
+                    className={`section-reveal-up absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-5 sm:p-6 ${
+                      campusGalleryVisible ? "is-visible" : ""
+                    }`}
                     style={{ animationDelay: `${index * 90 + 120}ms` }}
                   >
                     <h3
@@ -2139,7 +2224,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#389CD3] px-2 py-18 sm:px-2.5 sm:py-24 lg:px-3 lg:py-28">
+      <section className="bg-[#f39f3c] px-2 py-18 sm:px-2.5 sm:py-24 lg:px-3 lg:py-28">
         <div className="mx-auto w-full max-w-[1510px]">
           <div className="mx-auto max-w-[980px] text-center">
             <p className="text-[14px] font-semibold uppercase tracking-[0.24em] text-white/85">
@@ -2150,8 +2235,11 @@ export default function Home() {
               style={{ fontFamily: "var(--font-plus-jakarta-sans)" }}
               className="wave-reveal-heading mt-5 text-[34px] font-light leading-[0.98] tracking-[-0.05em] text-white sm:text-[46px] lg:text-[60px]"
             >
-              <span className="font-light">Latest </span>
-              <span className="font-extrabold">Social Media News</span>
+              <span className="font-mono font-light text-white">Latest</span>
+              <span className="font-extrabold text-[#101726]">
+                SocialMedia
+              </span>
+              <span className="font-mono font-extrabold text-white">News</span>
             </h2>
             <p
               data-section-reveal
